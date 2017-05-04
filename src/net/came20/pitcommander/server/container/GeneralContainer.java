@@ -22,8 +22,10 @@ public class GeneralContainer extends Container {
 
     public void setTeamNumber(int teamNumber) {
         synchronized (lock) {
-            this.teamNumber = teamNumber;
-            fireUpdate();
+            if (this.teamNumber != teamNumber) {
+                this.teamNumber = teamNumber;
+                fireUpdate();
+            }
         }
     }
 
@@ -35,8 +37,10 @@ public class GeneralContainer extends Container {
 
     public void setEventCode(String eventCode) {
         synchronized (lock) {
-            this.eventCode = eventCode;
-            fireUpdate();
+            if (!this.eventCode.equals(eventCode)) {
+                this.eventCode = eventCode;
+                fireUpdate();
+            }
         }
     }
 

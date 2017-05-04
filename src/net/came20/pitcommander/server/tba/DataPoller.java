@@ -3,6 +3,8 @@ package net.came20.pitcommander.server.tba;
 import com.cpjd.main.TBA;
 import com.cpjd.models.Event;
 import com.cpjd.models.Match;
+import net.came20.pitcommander.server.container.GeneralContainer;
+import net.came20.pitcommander.server.container.MatchContainer;
 import net.came20.pitcommander.server.util.EventSorter;
 import net.came20.pitcommander.server.util.MatchSorter;
 import net.came20.pitcommander.server.util.TimeTicker;
@@ -30,15 +32,13 @@ public class DataPoller implements Runnable {
     public void setup(int teamNumber, int interval) {
         this.teamNumber = teamNumber;
         this.interval = interval;
+        TBA.setID(Integer.toString(teamNumber), "PitCommander", "v1");
     }
     private DataPoller() {}
 
     private Event[] events;
     private Event currentEvent;
     private Match[] matches;
-    private List<Match> remainingMatches;
-    private Match currentMatch;
-    private Match nextMatch;
 
     @Override
     public void run() {
@@ -52,20 +52,15 @@ public class DataPoller implements Runnable {
                     currentEvent = new Event();
                 }
 
-                matches = MatchSorter.sort(tba.getTeamEventMatches(Year.now().getValue(), currentEvent.key, teamNumber));
-                remainingMatches = new ArrayList<>();
-                for (Match m : matches) {
-                    if (TimeTicker.getInstance().getCurrentTime() < m.time) {
-                        remainingMatches.add(m);
-                    }
-                }
+                GeneralContainer.getInstance().setEventCode(currentEvent.event_code);
 
-                if (remainingMatches.size() > 0) {
-                    currentMatch = remainingMatches.get(0);
-                    if (remainingMatches.size() > 1) {
-                        nextMatch = remainingMatches.get(1);
-                    }
-                }
+                matches = tba.getTeamEventMatches(Year.now().getValue(), currentEvent.key, teamNumber);
+                MatchContainer.getInstance().updateMatchList(matches);
+            }
+            try {
+                Thread.sleep(interval);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }

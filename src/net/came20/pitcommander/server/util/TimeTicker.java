@@ -4,6 +4,8 @@ import net.came20.pitcommander.server.announcement.TimeTickAnnouncement;
 import net.came20.pitcommander.server.socket.AnnounceSock;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by cameronearle on 4/30/17.
@@ -18,6 +20,7 @@ public class TimeTicker implements Runnable {
     private AnnounceSock sock = AnnounceSock.getInstance();
     private long currentTime;
     private Object lock = new Object();
+    public List<Runnable> taskList = new Vector<>();
 
     public void setup(int interval) {
         this.interval = interval;
@@ -38,6 +41,11 @@ public class TimeTicker implements Runnable {
             synchronized (lock) {
                 currentTime = Instant.now().toEpochMilli();
                 sock.announce(new TimeTickAnnouncement(currentTime)); //Send the EPOCH time
+                if (taskList.size() > 0) {
+                    for (Runnable r : taskList) {
+                        r.run();
+                    }
+                }
             }
             try {
                 Thread.sleep(interval);
