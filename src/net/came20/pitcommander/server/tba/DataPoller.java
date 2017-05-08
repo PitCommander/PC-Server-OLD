@@ -52,9 +52,12 @@ public class DataPoller implements Runnable {
                     currentEvent = new Event();
                 }
 
-                GeneralContainer.getInstance().setEventCode(currentEvent.event_code);
+                //GeneralContainer.getInstance().setEventCode(currentEvent.event_code);
+                GeneralContainer.getInstance().setEventCode("vapor"); //TODO REMOVE DEBUG CODE
 
-                matches = tba.getTeamEventMatches(Year.now().getValue(), currentEvent.key, teamNumber);
+
+                //matches = tba.getTeamEventMatches(Year.now().getValue(), currentEvent.event_code, teamNumber);
+                matches = tba.getTeamEventMatches(Year.now().getValue(), "vapor", teamNumber);
                 MatchContainer.getInstance().updateMatchList(matches);
             }
             try {

@@ -13,37 +13,38 @@ import java.util.Map;
 public class CommandRouter {
     public static Reply route(Command command) {
         Reply reply = null;
-        List<HashMap<String, Object>> payload = new ArrayList<>();
+        HashMap<String, Object> payload = new HashMap<>();
         boolean value;
         String name;
 
         switch (command.getCommand()) {
             case FETCH_CHECKLIST:
                 Map<String, Boolean> boxes = ChecklistContainer.getInstance().getMap();
-                payload.add(new HashMap<>());
-                payload.get(0).put("boxes", boxes);
+                payload.put("boxes", boxes);
+                payload.put("allChecked", ChecklistContainer.getInstance().getAllChecked());
+                payload.put("redSwitchTask", ChecklistContainer.getInstance().getRedTask());
+                payload.put("blueSwitchTask", ChecklistContainer.getInstance().getBlueTask());
                 reply = new Reply(Replies.CHECKLIST_DATA, payload);
                 break;
             case CHECKLIST_GET:
-                value = ChecklistContainer.getInstance().getChecked((String) command.getPayload().get(0).get("name"));
-                payload.add(new HashMap<>());
-                payload.get(0).put("value", value);
+                value = ChecklistContainer.getInstance().getChecked((String) command.getPayload().get("name"));
+                payload.put("value", value);
                 reply = new Reply(Replies.CHECKLIST_VALUE, payload);
                 break;
             case CHECKLIST_ADD:
-                name = (String) command.getPayload().get(0).get("name");
-                value = (Boolean) command.getPayload().get(0).get("value");
+                name = (String) command.getPayload().get("name");
+                value = (Boolean) command.getPayload().get("value");
                 ChecklistContainer.getInstance().addCheckbox(name, value);
                 reply = new Reply(Replies.GENERAL_ACK, null);
                 break;
             case CHECKLIST_REMOVE:
-                name = (String) command.getPayload().get(0).get("name");
+                name = (String) command.getPayload().get("name");
                 ChecklistContainer.getInstance().removeCheckbox(name);
                 reply = new Reply(Replies.GENERAL_ACK, null);
                 break;
             case CHECKLIST_SET:
-                name = (String) command.getPayload().get(0).get("name");
-                value = (Boolean) command.getPayload().get(0).get("value");
+                name = (String) command.getPayload().get("name");
+                value = (Boolean) command.getPayload().get("value");
                 ChecklistContainer.getInstance().setChecked(name, value);
                 reply = new Reply(Replies.GENERAL_ACK, null);
                 break;

@@ -18,7 +18,7 @@ public class TimeTicker implements Runnable {
 
     private int interval;
     private AnnounceSock sock = AnnounceSock.getInstance();
-    private long currentTime;
+    private long currentTime = 1489861620;
     private Object lock = new Object();
     public List<Runnable> taskList = new Vector<>();
 
@@ -39,7 +39,8 @@ public class TimeTicker implements Runnable {
     public void run() {
         while (!Thread.interrupted()) {
             synchronized (lock) {
-                currentTime = Instant.now().toEpochMilli();
+                //currentTime = Instant.now().toEpochMilli() / 1000L;
+                currentTime = currentTime + 100L;
                 sock.announce(new TimeTickAnnouncement(currentTime)); //Send the EPOCH time
                 if (taskList.size() > 0) {
                     for (Runnable r : taskList) {

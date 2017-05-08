@@ -13,8 +13,10 @@ public class MatchTools {
     }
 
     public static AllianceColor getTeamAlliance(Match m, int team) {
-        for(String s : m.redTeams) if(Integer.parseInt(s.replace("frc", "")) == team) return AllianceColor.RED;
-        for(String s : m.blueTeams) if(Integer.parseInt(s.replace("frc", "")) == team) return AllianceColor.BLUE;
+        if (m.redTeams != null && m.blueTeams != null) {
+            for (String s : m.redTeams) if (Integer.parseInt(s.replace("frc", "")) == team) return AllianceColor.RED;
+            for (String s : m.blueTeams) if (Integer.parseInt(s.replace("frc", "")) == team) return AllianceColor.BLUE;
+        }
         return AllianceColor.NONE;
     }
 }

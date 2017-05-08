@@ -10,9 +10,9 @@ import java.util.List;
  */
 public class Command {
     private Commands command;
-    private List<HashMap<String, Object>> payload;
+    private HashMap<String, Object> payload;
 
-    public Command(Commands command, List<HashMap<String, Object>> payload) {
+    public Command(Commands command, HashMap<String, Object> payload) {
         this.command = command;
         this.payload = payload;
     }
@@ -21,7 +21,7 @@ public class Command {
         return command;
     }
 
-    public List<HashMap<String, Object>> getPayload() {
+    public HashMap<String, Object> getPayload() {
         return payload;
     }
 }

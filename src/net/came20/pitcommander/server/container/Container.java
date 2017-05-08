@@ -9,7 +9,7 @@ import net.came20.pitcommander.server.socket.AnnounceSock;
 public abstract class Container {
     public abstract String getName();
     final transient Object lock = new Object();
-    void fireUpdate() {
+    public void fireUpdate() {
         AnnounceSock.getInstance().announce(new ContainerUpdateAnnouncement(this));
     }
 }

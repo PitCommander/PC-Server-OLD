@@ -1,5 +1,7 @@
 package net.came20.pitcommander.server.container;
 
+import net.came20.pitcommander.server.util.ChecklistPopulator;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,18 +27,23 @@ public class ChecklistContainer extends Container {
             }
         }
         allChecked = all;
-        blueSwitchTask = boxes.containsKey("Switch Bumpers: BLUE");
-        redSwitchTask = boxes.containsKey("Switch Bumpers: RED");
+        blueSwitchTask = boxes.containsKey("Switch Bumpers: BLUE") && !boxes.getOrDefault("Switch Bumpers: BLUE", true);
+        redSwitchTask = boxes.containsKey("Switch Bumpers: RED") && !boxes.getOrDefault("Switch Bumpers: RED", true);
     }
 
-    public void addCheckbox(String name, boolean value) {
+    public void addCheckbox(String name, boolean value, boolean doUpdate) {
         synchronized (lock) {
             if (!boxes.containsKey(name)) {
                 boxes.put(name, value);
                 checkAll();
-                fireUpdate();
+                if (doUpdate)
+                    fireUpdate();
             }
         }
+    }
+
+    public void addCheckbox(String name, boolean value) {
+        this.addCheckbox(name, value, true);
     }
 
     public void removeCheckbox(String name) {
@@ -58,14 +65,32 @@ public class ChecklistContainer extends Container {
     public void reset() { //Resets the checklist and repopulates default items, then tells the populator to fill in
         synchronized (lock) {
             boxes.clear();
-            fireUpdate(); //Send the cleared list to the clients
-
+            ChecklistPopulator.populate(this);
+            fireUpdate(); //Send the new list to the clients
         }
     }
 
     public boolean getChecked(String name) {
         synchronized (lock) {
             return boxes.get(name);
+        }
+    }
+
+    public boolean getAllChecked() {
+        synchronized (lock) {
+            return allChecked;
+        }
+    }
+
+    public boolean getRedTask() {
+        synchronized (lock) {
+            return redSwitchTask;
+        }
+    }
+
+    public boolean getBlueTask() {
+        synchronized (lock) {
+            return blueSwitchTask;
         }
     }
 

@@ -8,9 +8,9 @@ import java.util.List;
  */
 public class Reply {
     private Replies reply;
-    private List<HashMap<String, Object>> payload;
+    private HashMap<String, Object> payload;
 
-    public Reply(Replies reply, List<HashMap<String, Object>> payload) {
+    public Reply(Replies reply, HashMap<String, Object> payload) {
         this.reply = reply;
         this.payload = payload;
     }
@@ -19,7 +19,7 @@ public class Reply {
         return reply;
     }
 
-    public List<HashMap<String, Object>> getPayload() {
+    public HashMap<String, Object> getPayload() {
         return payload;
     }
 }
