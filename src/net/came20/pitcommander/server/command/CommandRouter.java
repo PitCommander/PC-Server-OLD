@@ -2,10 +2,7 @@ package net.came20.pitcommander.server.command;
 
 import net.came20.pitcommander.server.container.ChecklistContainer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by cameronearle on 4/30/17.
@@ -19,7 +16,7 @@ public class CommandRouter {
 
         switch (command.getCommand()) {
             case FETCH_CHECKLIST:
-                Map<String, Boolean> boxes = ChecklistContainer.getInstance().getMap();
+                Vector<ChecklistContainer.Checkbox> boxes = ChecklistContainer.getInstance().getList();
                 payload.put("boxes", boxes);
                 payload.put("allChecked", ChecklistContainer.getInstance().getAllChecked());
                 payload.put("redSwitchTask", ChecklistContainer.getInstance().getRedTask());

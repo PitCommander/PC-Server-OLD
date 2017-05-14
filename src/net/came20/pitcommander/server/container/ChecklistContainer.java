@@ -4,37 +4,87 @@ import net.came20.pitcommander.server.util.ChecklistPopulator;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * Created by cameronearle on 4/30/17.
  */
 public class ChecklistContainer extends Container {
+    public class Checkbox {
+        private transient boolean searchWildcard = false;
+        private String name;
+        private boolean value;
+
+        public Checkbox(String name, boolean value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public Checkbox(String name) {
+            this.name = name;
+            searchWildcard = true;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean getValue() {
+            return value;
+        }
+
+        public void setValue(boolean value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Checkbox checkbox = (Checkbox) o;
+
+            if (!searchWildcard) {
+                if (value != checkbox.value) return false;
+            }
+            return name != null ? name.equals(checkbox.name) : checkbox.name == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name != null ? name.hashCode() : 0;
+            result = 31 * result + (value ? 1 : 0);
+            return result;
+        }
+    }
+
     private static transient ChecklistContainer ourInstance = new ChecklistContainer();
     public static ChecklistContainer getInstance() {
         return ourInstance;
     }
 
-    private Map<String, Boolean> boxes = new LinkedHashMap<>();
+    private Vector<Checkbox> boxes = new Vector<>();
     private boolean allChecked = true;
     private boolean blueSwitchTask = false;
     private boolean redSwitchTask = false;
 
     private void checkAll() {
         boolean all = true;
-        for (boolean b : boxes.values()) {
-            if (!b) {
+        for (Checkbox c : boxes) {
+            if (!c.value) {
                 all = false;
             }
         }
         allChecked = all;
-        blueSwitchTask = boxes.containsKey("Switch Bumpers: BLUE") && !boxes.getOrDefault("Switch Bumpers: BLUE", true);
-        redSwitchTask = boxes.containsKey("Switch Bumpers: RED") && !boxes.getOrDefault("Switch Bumpers: RED", true);
+        blueSwitchTask = boxes.contains(new Checkbox("Switch Bumpers: BLUE", false));
+        redSwitchTask = boxes.contains(new Checkbox("Switch Bumpers: RED", false));
     }
 
     public void addCheckbox(String name, boolean value, boolean doUpdate) {
+        Checkbox c = new Checkbox(name, value);
         synchronized (lock) {
-            if (!boxes.containsKey(name)) {
-                boxes.put(name, value);
+            if (!boxes.contains(c)) {
+                boxes.add(c);
                 checkAll();
                 if (doUpdate)
                     fireUpdate();
@@ -56,9 +106,12 @@ public class ChecklistContainer extends Container {
 
     public void setChecked(String name, boolean value) {
         synchronized (lock) {
-            boxes.replace(name, value);
-            checkAll();
-            fireUpdate();
+            if (boxes.contains(new Checkbox(name))) {
+                Checkbox c = new Checkbox(name, value);
+                boxes.set(boxes.indexOf(new Checkbox(name)), c);
+                checkAll();
+                fireUpdate();
+            }
         }
     }
 
@@ -66,13 +119,18 @@ public class ChecklistContainer extends Container {
         synchronized (lock) {
             boxes.clear();
             ChecklistPopulator.populate(this);
+            checkAll();
             fireUpdate(); //Send the new list to the clients
         }
     }
 
     public boolean getChecked(String name) {
         synchronized (lock) {
-            return boxes.get(name);
+            if (boxes.contains(new Checkbox(name))) {
+                return boxes.get(boxes.indexOf(new Checkbox(name))).getValue();
+            } else {
+                return false;
+            }
         }
     }
 
@@ -94,7 +152,7 @@ public class ChecklistContainer extends Container {
         }
     }
 
-    public Map<String, Boolean> getMap() {
+    public Vector<Checkbox> getList() {
         return boxes;
     }
 

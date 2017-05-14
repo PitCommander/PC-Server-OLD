@@ -6,6 +6,7 @@ import com.cpjd.models.Match;
 import com.google.gson.Gson;
 import net.came20.pitcommander.server.announcement.TimeTickAnnouncement;
 import net.came20.pitcommander.server.command.Command;
+import net.came20.pitcommander.server.container.ChecklistContainer;
 import net.came20.pitcommander.server.container.GeneralContainer;
 import net.came20.pitcommander.server.socket.AnnounceSock;
 import net.came20.pitcommander.server.socket.CommandSock;
@@ -28,6 +29,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class Server {
     public static final int TEAM_NUMBER = 401;
     public static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(4);
+    public static final long WARN_TIME = 300;
 
     public static void main(String[] args) {
         AnnounceSock.getInstance().setup("*", 5800);
@@ -46,6 +48,26 @@ public class Server {
         DataPoller.getInstance().setup(TEAM_NUMBER, 30000); //Poll every 30 seconds
         Thread dataPollerThread = new Thread(DataPoller.getInstance());
         dataPollerThread.start(); //Start the data poller
+
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            String data = scanner.nextLine();
+            if (data.equals("red")) {
+                ChecklistContainer.getInstance().setChecked("Switch Bumpers: RED", true);
+            }
+            if (data.equals("blue")) {
+                ChecklistContainer.getInstance().setChecked("Switch Bumpers: BLUE", true);
+            }
+            if (data.equals("ured")) {
+                ChecklistContainer.getInstance().setChecked("Switch Bumpers: RED", false);
+            }
+            if (data.equals("ublue")) {
+                ChecklistContainer.getInstance().setChecked("Switch Bumpers: BLUE", false);
+            }
+            if (data.equals("quit")) {
+                break;
+            }
+        }
 
         try {
             commandThread.join(); //This thread may get the power to shutdown in the future, so it is a good choice to join

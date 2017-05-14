@@ -30,8 +30,8 @@ public class ChecklistPopulator {
         }
 
         //Basic tasks
-        container.addCheckbox("Switch Battery", false, false);
-        container.addCheckbox("Charge Air", false, false);
-        container.addCheckbox("Systems Test", false, false);
+        //container.addCheckbox("Switch Battery", false, false);
+        //container.addCheckbox("Charge Air", false, false);
+        //container.addCheckbox("Systems Test", false, false);
     }
 }

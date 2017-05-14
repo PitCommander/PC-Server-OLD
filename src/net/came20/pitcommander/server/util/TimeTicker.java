@@ -18,7 +18,7 @@ public class TimeTicker implements Runnable {
 
     private int interval;
     private AnnounceSock sock = AnnounceSock.getInstance();
-    private long currentTime = 1489861620;
+    private long currentTime = 1489848500;
     private Object lock = new Object();
     public List<Runnable> taskList = new Vector<>();
 

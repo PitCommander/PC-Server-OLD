@@ -39,6 +39,7 @@ public class DataPoller implements Runnable {
     private Event[] events;
     private Event currentEvent;
     private Match[] matches;
+    private Match[] allMatches;
 
     @Override
     public void run() {
@@ -58,7 +59,8 @@ public class DataPoller implements Runnable {
 
                 //matches = tba.getTeamEventMatches(Year.now().getValue(), currentEvent.event_code, teamNumber);
                 matches = tba.getTeamEventMatches(Year.now().getValue(), "vapor", teamNumber);
-                MatchContainer.getInstance().updateMatchList(matches);
+                allMatches = tba.getMatches("vapor", Year.now().getValue(), true);
+                MatchContainer.getInstance().updateMatchList(matches, allMatches);
             }
             try {
                 Thread.sleep(interval);
